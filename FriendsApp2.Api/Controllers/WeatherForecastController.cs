@@ -9,8 +9,9 @@ using Microsoft.Extensions.Logging;
 
 namespace FriendsApp2.Api.Controllers
 {
+    
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]

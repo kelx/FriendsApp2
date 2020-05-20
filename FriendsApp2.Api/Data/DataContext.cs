@@ -8,5 +8,6 @@ namespace FriendsApp2.Api.Data
         public DataContext(DbContextOptions<DataContext> options) : base(options){}
         
         public DbSet<WeatherForecast> Weatherforcasts { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }
