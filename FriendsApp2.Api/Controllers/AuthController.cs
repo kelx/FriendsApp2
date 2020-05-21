@@ -9,12 +9,12 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Configuration;
 using System.Text;
 using System;
-using Microsoft.AspNetCore.Authorization;
+
 
 namespace FriendsApp2.Api.Controllers
 {
 
-    [Authorize]
+    
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
@@ -27,7 +27,7 @@ namespace FriendsApp2.Api.Controllers
             _config = config;
             _repo = repo;
         }
-
+        
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
         {
@@ -50,6 +50,7 @@ namespace FriendsApp2.Api.Controllers
 
 
         }
+       
         [HttpPost("Login")]
         public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
         {

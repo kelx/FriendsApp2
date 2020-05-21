@@ -6,10 +6,11 @@ using FriendsApp2.Api.Data;
 using FriendsApp2.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FriendsApp2.Api.Controllers
 {
-    
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class WeatherForecastController : ControllerBase
@@ -27,7 +28,8 @@ namespace FriendsApp2.Api.Controllers
             _context = context;
             _logger = logger;
         }
-
+        // [AllowAnonymous]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
@@ -40,6 +42,8 @@ namespace FriendsApp2.Api.Controllers
             })
             .ToArray();
         }
+
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public IActionResult WeatherForecast(int id)
         {
