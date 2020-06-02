@@ -9,6 +9,7 @@ import { NavComponent } from './nav/nav.component';
 import { AuthService } from 'src/_services/auth.service';
 import { HomeComponent } from './home/home.component';
 import { RegisterComponent } from './register/register.component';
+import { ErrorInterceptorProvider } from 'src/_services/error.interceptor';
 
 
 
@@ -27,7 +28,8 @@ import { RegisterComponent } from './register/register.component';
       FormsModule
    ],
    providers: [
-      AuthService
+      AuthService,
+      ErrorInterceptorProvider
    ],
    bootstrap: [
       AppComponent
