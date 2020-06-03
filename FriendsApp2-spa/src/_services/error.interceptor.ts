@@ -10,6 +10,18 @@ export class ErrorInterceptor implements HttpInterceptor {
     return next.handle(req).pipe(
       catchError(error => {
         if (error instanceof HttpErrorResponse) {
+          if (error.status === 400) {
+            const servError = error.error;
+            let modalErrors = '';
+            if (servError && typeof servError === 'object') {
+            for (const key in servError.errors) {
+              if (servError.errors[key]) {
+                modalErrors += servError.errors[key] + '\n';
+              }
+            }
+          }
+            return throwError(modalErrors);
+          }
 
           if (error.status === 401) {
             return throwError(error.statusText);
