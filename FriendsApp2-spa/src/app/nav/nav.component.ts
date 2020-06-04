@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/_services/auth.service';
 import { AlertifyService } from 'src/_services/alertify.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-nav',
@@ -11,7 +12,8 @@ export class NavComponent implements OnInit {
 
   model: any = {};
 
-  constructor(public authService: AuthService, private alertifyService: AlertifyService) { }
+  constructor(public authService: AuthService, private alertifyService: AlertifyService,
+        private router: Router) { }
 
   ngOnInit() {
   }
@@ -23,6 +25,8 @@ export class NavComponent implements OnInit {
         this.alertifyService.success('Logged In successfully.')
       }, error => {
         this.alertifyService.error(error);
+      }, () => {
+        this.router.navigate(['/members']);
       }
     );
   }
@@ -30,6 +34,7 @@ export class NavComponent implements OnInit {
   logout() {
     localStorage.removeItem('token');
     this.alertifyService.message('logged out');
+    this.router.navigate(['/home']);
   }
   loggedIn() {
     return this.authService.loggedIn();
