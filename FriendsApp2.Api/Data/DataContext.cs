@@ -9,5 +9,7 @@ namespace FriendsApp2.Api.Data
         
         public DbSet<WeatherForecast> Weatherforcasts { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Photo> Photos { get; set; }
+        //public DbSet<Group> Groups { get; set; }
     }
 }
