@@ -1,15 +1,19 @@
 <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-primary">
   <div class="container">
-    <a class="navbar-brand" [routerLink]="['/home']" >Friends App</a>
 
-    <ul *ngIf="loggedIn()" class="navbar-nav mr-auto" >
-      <li class="nav-item" routerLinkActive="active" >
+    <div *ngIf="!loggedIn(); then thenBlock else elseBlock"></div>
+    <ng-template #thenBlock><a class="navbar-brand" [routerLink]="['/home']">Friends App</a></ng-template>
+    <ng-template #elseBlock><a class="navbar-brand" [routerLink]="['/members']">Friends App</a></ng-template>
+
+
+    <ul *ngIf="loggedIn()" class="navbar-nav mr-auto">
+      <li class="nav-item" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/members']">Matches</a>
       </li>
-      <li class="nav-item" routerLinkActive="active" >
-        <a class="nav-link" [routerLink]="['/lists']" >Lists</a>
+      <li class="nav-item" routerLinkActive="active">
+        <a class="nav-link" [routerLink]="['/lists']">Lists</a>
       </li>
-      <li class="nav-item" routerLinkActive="active" >
+      <li class="nav-item" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/messages']">Messages</a>
       </li>
 
