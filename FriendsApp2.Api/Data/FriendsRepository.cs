@@ -22,6 +22,11 @@ namespace FriendsApp2.Api.Data
         {
             _context.Remove(entity);
         }
+        public void Update<T>(T entity) where T : class
+        {
+            _context.Update(entity);
+        }
+
 
         public async Task<User> GetUser(int id)
         {
@@ -35,8 +40,10 @@ namespace FriendsApp2.Api.Data
             return users;
         }
 
+
         public async Task<bool> SaveAll()
         {
+            
             return await _context.SaveChangesAsync() > 0;
         }
     }

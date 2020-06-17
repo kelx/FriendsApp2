@@ -28,6 +28,7 @@ namespace FriendsApp2.Api.helpers
                 }
             );
             CreateMap<Photo, PhotosForDetailedDto>();
+            CreateMap<UserForUpdateDto, User>();
         }
         
     }
