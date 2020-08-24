@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule} from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
@@ -8,6 +8,7 @@ import { TabsModule } from 'ngx-bootstrap/tabs';
 import { RouterModule } from '@angular/router';
 import { JwtModule } from '@auth0/angular-jwt';
 import { NgxGalleryModule } from '@kolkov/ngx-gallery';
+import { FileUploadModule } from 'ng2-file-upload';
 
 import { AppComponent } from './app.component';
 import { WeatherComponent } from './Weather/Weather.component';
@@ -30,6 +31,8 @@ import { MemberListResolver } from 'src/_resolvers/member-list.resolver';
 import { MemberEditComponent } from './members/member-edit/member-edit.component';
 import { MemberEditResolver } from 'src/_resolvers/member-edit.resolver';
 import { PrevetUnSavedChanges } from 'src/_guards/prevent-unsaved-changes.guard';
+import { PhotoEditorComponent } from './members/photo-editor/photo-editor.component';
+
 
 
 
@@ -38,50 +41,52 @@ export function tokenGetter() {
 }
 
 @NgModule({
-   declarations: [
-      AppComponent,
-      WeatherComponent,
-      NavComponent,
-      HomeComponent,
-      RegisterComponent,
-      HomeComponent,
-      MemberListComponent,
-      ListsComponent,
-      MessagesComponent,
-      MemberCardComponent,
-      MemberDetailComponent,
-      MemberEditComponent
-   ],
-   imports: [
-      BrowserModule,
-      HttpClientModule,
-      FormsModule,
-      BrowserAnimationsModule,
-      BsDropdownModule.forRoot(),
-      TabsModule.forRoot(),
-      NgxGalleryModule,
-      RouterModule.forRoot(appRoutes),
-      JwtModule.forRoot({
-        config: {
-          tokenGetter: tokenGetter,
-          whitelistedDomains: ['localhost:5000'],
-          blacklistedRoutes: ['localhost:5000/api/auth']
-        }
-      })
-   ],
-   providers: [
-      AuthService,
-      ErrorInterceptorProvider,
-      AlertifyService,
-      AuthGuard,
-      UserService,
-      MemberDetailResolver,
-      MemberListResolver,
-      MemberEditResolver,
-      PrevetUnSavedChanges
-   ],
-   bootstrap: [
-      AppComponent
-   ]
+  declarations: [
+    AppComponent,
+    WeatherComponent,
+    NavComponent,
+    HomeComponent,
+    RegisterComponent,
+    HomeComponent,
+    MemberListComponent,
+    ListsComponent,
+    MessagesComponent,
+    MemberCardComponent,
+    MemberDetailComponent,
+    MemberEditComponent,
+    PhotoEditorComponent
+  ],
+  imports: [
+    BrowserModule,
+    HttpClientModule,
+    FormsModule,
+    BrowserAnimationsModule,
+    BsDropdownModule.forRoot(),
+    TabsModule.forRoot(),
+    NgxGalleryModule,
+    FileUploadModule,
+    RouterModule.forRoot(appRoutes),
+    JwtModule.forRoot({
+      config: {
+        tokenGetter: tokenGetter,
+        whitelistedDomains: ['localhost:5000'],
+        blacklistedRoutes: ['localhost:5000/api/auth']
+      }
+    })
+  ],
+  providers: [
+    AuthService,
+    ErrorInterceptorProvider,
+    AlertifyService,
+    AuthGuard,
+    UserService,
+    MemberDetailResolver,
+    MemberListResolver,
+    MemberEditResolver,
+    PrevetUnSavedChanges
+  ],
+  bootstrap: [
+    AppComponent
+  ]
 })
 export class AppModule { }

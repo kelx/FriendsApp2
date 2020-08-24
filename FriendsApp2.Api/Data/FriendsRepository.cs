@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FriendsApp2.Api.Models;
 using Microsoft.EntityFrameworkCore;
@@ -43,8 +44,19 @@ namespace FriendsApp2.Api.Data
 
         public async Task<bool> SaveAll()
         {
-            
+
             return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<Photo> GetPhoto(int id)
+        {
+            return await _context.Photos.FirstOrDefaultAsync(k => k.Id == id);
+        }
+
+        public async Task<Photo> GetMainPhotoForUser(int userId)
+        {
+            return await _context.Photos.Where(u => u.UserId == userId)
+                                .FirstOrDefaultAsync(p => p.IsMain);
         }
     }
 }

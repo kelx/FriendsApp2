@@ -40,6 +40,7 @@ namespace FriendsApp2.Api
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
             services.AddCors();
+            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
             services.AddAutoMapper(typeof(Startup));
             services.AddTransient<Seed>();
             services.AddScoped<IAuthRepository, AuthRepository>();
@@ -55,6 +56,12 @@ namespace FriendsApp2.Api
                         ValidateAudience = false // change it in production mode
                     };
                 });
+            
+    //         services.AddHttpsRedirection(options =>
+    // {
+    //     options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+    //     options.HttpsPort = 5001;
+    // });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

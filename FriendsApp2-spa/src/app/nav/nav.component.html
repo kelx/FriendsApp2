@@ -1,10 +1,16 @@
 <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-primary">
   <div class="container">
-
-    <div *ngIf="!loggedIn(); then thenBlock else elseBlock"></div>
-    <ng-template #thenBlock><a class="navbar-brand" [routerLink]="['/home']">Friends App</a></ng-template>
-    <ng-template #elseBlock><a class="navbar-brand" [routerLink]="['/members']">Friends App</a></ng-template>
-
+    <div *ngIf="!loggedIn(); then thenBlock; else elseBlock"></div>
+    <ng-template #thenBlock
+      ><a class="navbar-brand" [routerLink]="['/home']"
+        >Friends App</a
+      ></ng-template
+    >
+    <ng-template #elseBlock
+      ><a class="navbar-brand" [routerLink]="['/members']"
+        >Friends App</a
+      ></ng-template
+    >
 
     <ul *ngIf="loggedIn()" class="navbar-nav mr-auto">
       <li class="nav-item" routerLinkActive="active">
@@ -16,26 +22,53 @@
       <li class="nav-item" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/messages']">Messages</a>
       </li>
-
     </ul>
     <div *ngIf="loggedIn()" class="dropdown" dropdown>
+      <span class="mr-2"><img src="{{ photoUrl }}" alt="" /></span>
       <a class="dropdown-toggle text-light" dropdownToggle>
-        Welcome {{authService.decodedToken.unique_name | titlecase}}
+        Welcome {{ authService.decodedToken.unique_name | titlecase }}
       </a>
 
       <div class="dropdown-menu" mt-3 *dropdownMenu>
-        <a class="dropdown-item" [routerLink]="['/member/edit']" ><i class="fa fa-user"></i>Edit Profile</a>
+        <a class="dropdown-item" [routerLink]="['/member/edit']"
+          ><i class="fa fa-user"></i>Edit Profile</a
+        >
         <div class="dropdown-divider"></div>
-        <a class="dropdown-item" (click)="logout()"><i class="fa fa-sign-out"></i>Logout</a>
+        <a class="dropdown-item" (click)="logout()"
+          ><i class="fa fa-sign-out"></i>Logout</a
+        >
       </div>
     </div>
 
-    <form *ngIf="!loggedIn()" #loginForm="ngForm" class="form-inline my-2 my-lg-0" (ngSubmit)="login()">
-      <input class="form-control mr-sm-2" name="username" type="text" placeholder="Username" required
-        [(ngModel)]="model.username">
-      <input class="form-control mr-sm-2" name="password" type="password" placeholder="Password" required
-        [(ngModel)]="model.password">
-      <button [disabled]="!loginForm.valid" class="btn btn-outline-success my-2 my-sm-0" type="submit">Login</button>
+    <form
+      *ngIf="!loggedIn()"
+      #loginForm="ngForm"
+      class="form-inline my-2 my-lg-0"
+      (ngSubmit)="login()"
+    >
+      <input
+        class="form-control mr-sm-2"
+        name="username"
+        type="text"
+        placeholder="Username"
+        required
+        [(ngModel)]="model.username"
+      />
+      <input
+        class="form-control mr-sm-2"
+        name="password"
+        type="password"
+        placeholder="Password"
+        required
+        [(ngModel)]="model.password"
+      />
+      <button
+        [disabled]="!loginForm.valid"
+        class="btn btn-outline-success my-2 my-sm-0"
+        type="submit"
+      >
+        Login
+      </button>
     </form>
   </div>
 </nav>

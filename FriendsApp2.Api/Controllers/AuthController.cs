@@ -9,25 +9,27 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Configuration;
 using System.Text;
 using System;
-
+using AutoMapper;
 
 namespace FriendsApp2.Api.Controllers
 {
 
-    
+
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
         private readonly IAuthRepository _repo;
         private readonly IConfiguration _config;
+        private readonly IMapper _mapper;
 
-        public AuthController(IAuthRepository repo, IConfiguration config)
+        public AuthController(IAuthRepository repo, IConfiguration config, IMapper mapper)
         {
             _config = config;
+            _mapper = mapper;
             _repo = repo;
         }
-        
+
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
         {
@@ -50,12 +52,12 @@ namespace FriendsApp2.Api.Controllers
 
 
         }
-       
+
         [HttpPost("Login")]
         public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
         {
 
-           var userFromRepo = await _repo.Login(userForLoginDto.Username.ToLower(), userForLoginDto.Password);
+            var userFromRepo = await _repo.Login(userForLoginDto.Username.ToLower(), userForLoginDto.Password);
 
             if (userFromRepo == null)
                 return Unauthorized();
@@ -92,8 +94,12 @@ namespace FriendsApp2.Api.Controllers
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return Ok (new {
-                token = tokenHandler.WriteToken(token)
+            var user = _mapper.Map<UserForListsDto>(userFromRepo);
+
+            return Ok(new
+            {
+                token = tokenHandler.WriteToken(token),
+                user
             });
 
         }
