@@ -31,7 +31,7 @@ namespace FriendsApp2.Api.Controllers
             return Ok(usersToReturn);
         }
         [Authorize(AuthenticationSchemes = "Bearer")]
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetUser")]
         public async Task<IActionResult> GetUser(int id)
         {
             var user = await _repo.GetUser(id);
@@ -42,16 +42,16 @@ namespace FriendsApp2.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(int id, UserForUpdateDto userForUpdateDto)
         {
-            if(id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value)) 
+            if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
             {
                 return Unauthorized();
             }
             var userFromRepo = await _repo.GetUser(id);
             _mapper.Map(userForUpdateDto, userFromRepo);
-            
+
             _repo.Update(userFromRepo);
 
-            if(await _repo.SaveAll())
+            if (await _repo.SaveAll())
                 return NoContent();
 
             throw new System.Exception($"Updating user {id} failed on save.");

@@ -10,20 +10,24 @@ namespace FriendsApp2.Api.helpers
         public AutoMapperProfiles()
         {
             CreateMap<User, UserForListsDto>().ForMember(
-                dest => dest.PhotoUrl, opt => {
+                dest => dest.PhotoUrl, opt =>
+                {
                     opt.MapFrom(src => src.Photos.FirstOrDefault(k => k.IsMain).Url);
                 }
             ).ForMember(
-                dest => dest.Age, opt => {
+                dest => dest.Age, opt =>
+                {
                     opt.MapFrom((s, d) => s.DateOfBirth.CalculateAge());
                 }
             );
             CreateMap<User, UserForDetailedDto>().ForMember(
-                dest => dest.PhotoUrl, opt => {
+                dest => dest.PhotoUrl, opt =>
+                {
                     opt.MapFrom(src => src.Photos.FirstOrDefault(k => k.IsMain).Url);
                 }
             ).ForMember(
-                dest => dest.Age, opt => {
+                dest => dest.Age, opt =>
+                {
                     opt.MapFrom((s, d) => s.DateOfBirth.CalculateAge());
                 }
             );
@@ -31,8 +35,9 @@ namespace FriendsApp2.Api.helpers
             CreateMap<UserForUpdateDto, User>();
             CreateMap<PhotoForCreationDto, Photo>();
             CreateMap<Photo, PhotoForReturnDto>(); // source, destination
-            
+            CreateMap<UserForRegisterDto, User>();
+
         }
-        
+
     }
 }
