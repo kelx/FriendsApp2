@@ -18,7 +18,7 @@ export class MemberDetailComponent implements OnInit {
   galleryImages: NgxGalleryImage[];
 
   constructor(private userService: UserService, private alertify: AlertifyService,
-              private route: ActivatedRoute) { }
+    private route: ActivatedRoute) { }
 
   ngOnInit() {
     this.route.data.subscribe(data => {
@@ -31,7 +31,7 @@ export class MemberDetailComponent implements OnInit {
       thumbnailsColumns: 4,
       imageAnimation: NgxGalleryAnimation.Slide,
       preview: false
-  }];
+    }];
 
     this.galleryImages = this.getImages();
 

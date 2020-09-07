@@ -35,7 +35,7 @@ namespace FriendsApp2.Api
         {
             services.AddDbContext<DataContext>(x => x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             //         services.AddControllers();
-            services.AddControllers().AddNewtonsoftJson(options => 
+            services.AddControllers().AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
@@ -46,7 +46,8 @@ namespace FriendsApp2.Api
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IFriendsRepository, FriendsRepository>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options => {
+                .AddJwtBearer(options =>
+                {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuerSigningKey = true,
@@ -56,12 +57,13 @@ namespace FriendsApp2.Api
                         ValidateAudience = false // change it in production mode
                     };
                 });
-            
-    //         services.AddHttpsRedirection(options =>
-    // {
-    //     options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
-    //     options.HttpsPort = 5001;
-    // });
+            services.AddScoped<LogUserActivity>();
+
+            //         services.AddHttpsRedirection(options =>
+            // {
+            //     options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+            //     options.HttpsPort = 5001;
+            // });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -74,11 +76,13 @@ namespace FriendsApp2.Api
             else
             {
                 // Exception handling globally
-                app.UseExceptionHandler(builder => {
-                    builder.Run(async context => {
+                app.UseExceptionHandler(builder =>
+                {
+                    builder.Run(async context =>
+                    {
                         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                         var error = context.Features.Get<IExceptionHandlerFeature>();
-                        if(error != null)
+                        if (error != null)
                         {
                             context.Response.AddApplicationError(error.Error.Message);
                             await context.Response.WriteAsync(error.Error.Message);
@@ -98,7 +102,7 @@ namespace FriendsApp2.Api
 
             app.UseEndpoints(endpoints =>
             {
-               endpoints.MapControllers();
+                endpoints.MapControllers();
             });
         }
     }

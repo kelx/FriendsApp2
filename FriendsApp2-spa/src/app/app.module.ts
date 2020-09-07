@@ -10,6 +10,7 @@ import { RouterModule } from '@angular/router';
 import { JwtModule } from '@auth0/angular-jwt';
 import { NgxGalleryModule } from '@kolkov/ngx-gallery';
 import { FileUploadModule } from 'ng2-file-upload';
+import { MomentModule } from 'ngx-moment';
 
 import { AppComponent } from './app.component';
 import { WeatherComponent } from './Weather/Weather.component';
@@ -33,6 +34,7 @@ import { MemberEditComponent } from './members/member-edit/member-edit.component
 import { MemberEditResolver } from 'src/_resolvers/member-edit.resolver';
 import { PrevetUnSavedChanges } from 'src/_guards/prevent-unsaved-changes.guard';
 import { PhotoEditorComponent } from './members/photo-editor/photo-editor.component';
+import { from } from 'rxjs';
 
 
 
@@ -55,7 +57,8 @@ export function tokenGetter() {
     MemberCardComponent,
     MemberDetailComponent,
     MemberEditComponent,
-    PhotoEditorComponent
+    PhotoEditorComponent,
+
   ],
   imports: [
     BrowserModule,
@@ -69,6 +72,11 @@ export function tokenGetter() {
     NgxGalleryModule,
     FileUploadModule,
     RouterModule.forRoot(appRoutes),
+    MomentModule.forRoot({
+      relativeTimeThresholdOptions: {
+        'm': 59
+      }
+    }),
     JwtModule.forRoot({
       config: {
         tokenGetter: tokenGetter,
