@@ -123,5 +123,8 @@
       }
     }
   },
-  "defaultProject": "FriendsApp2-spa"
+  "defaultProject": "FriendsApp2-spa",
+  "cli": {
+    "analytics": "023b639d-0863-4f7c-a914-49cedbed83bf"
+  }
 }

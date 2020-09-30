@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FriendsApp2.Api.helpers;
 using FriendsApp2.Api.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,10 +37,40 @@ namespace FriendsApp2.Api.Data
             return user;
         }
 
-        public async Task<IEnumerable<User>> GetUsers()
+        public async Task<PagedList<User>> GetUsers(UserParams userParams)
         {
-            var users = await _context.Users.Include(k => k.Photos).ToListAsync();
-            return users;
+            var users = _context.Users.Include(k => k.Photos)
+                        .OrderByDescending(k => k.LastActive).AsQueryable(); ;
+
+            users = users.Where(k => k.Id != userParams.UserId);
+            if (!string.IsNullOrEmpty(userParams.Gender))
+            {
+                users = users.Where(k => k.Gender == userParams.Gender);
+            }
+
+            if (userParams.MinAge != 18 || userParams.MaxAge != 99)
+            {
+                var minDob = DateTime.Today.AddYears(-userParams.MaxAge - 1);
+                var maxDob = DateTime.Today.AddYears(-userParams.MinAge - 1);
+
+                users = users.Where(k => k.DateOfBirth >= minDob && k.DateOfBirth <= maxDob);
+            }
+            if (!string.IsNullOrEmpty(userParams.OrderBy))
+            {
+                switch (userParams.OrderBy)
+                {
+                    case "created":
+                        users = users.OrderByDescending(k => k.Created);
+                        break;
+                        
+                    default:
+                        users = users.OrderByDescending(k => k.LastActive);
+                        break;
+                }
+            }
+
+
+            return await PagedList<User>.CreateAsync(users, userParams.PageNumber, userParams.PageSize);
         }
 
 
