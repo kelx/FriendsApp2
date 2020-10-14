@@ -10,6 +10,7 @@ import { MemberListResolver } from 'src/_resolvers/member-list.resolver';
 import { MemberEditComponent } from './members/member-edit/member-edit.component';
 import { MemberEditResolver } from 'src/_resolvers/member-edit.resolver';
 import { PrevetUnSavedChanges } from 'src/_guards/prevent-unsaved-changes.guard';
+import { ListResolver } from 'src/_resolvers/list-resolver';
 
 export const appRoutes: Routes = [
   { path: '', component: HomeComponent },
@@ -18,14 +19,18 @@ export const appRoutes: Routes = [
     runGuardsAndResolvers: 'always',
     canActivate: [AuthGuard],
     children: [
-      { path: 'members', component: MemberListComponent, resolve: {users: MemberListResolver} },
-      { path: 'members/:id', component: MemberDetailComponent,
-        resolve: {user: MemberDetailResolver} },
-      { path: 'member/edit', component: MemberEditComponent,
-        resolve: {user: MemberEditResolver},
-        canDeactivate: [PrevetUnSavedChanges] },
+      { path: 'members', component: MemberListComponent, resolve: { users: MemberListResolver } },
+      {
+        path: 'members/:id', component: MemberDetailComponent,
+        resolve: { user: MemberDetailResolver }
+      },
+      {
+        path: 'member/edit', component: MemberEditComponent,
+        resolve: { user: MemberEditResolver },
+        canDeactivate: [PrevetUnSavedChanges]
+      },
       { path: 'messages', component: MessagesComponent },
-      { path: 'lists', component: ListsComponent },
+      { path: 'lists', component: ListsComponent, resolve: { users: ListResolver } },
     ]
   },
   { path: '**', redirectTo: '', pathMatch: 'full' },
