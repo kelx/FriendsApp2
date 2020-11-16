@@ -11,6 +11,7 @@ namespace FriendsApp2.Api.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Photo> Photos { get; set; }
         public DbSet<Like> Likes { get; set; }
+        public DbSet<Message> Messages { get; set; }
         //public DbSet<Group> Groups { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -27,6 +28,16 @@ namespace FriendsApp2.Api.Data
                 .HasOne(k => k.Liker)
                 .WithMany(k => k.Likees)
                 .HasForeignKey(k => k.LikerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Message>()
+                .HasOne(k => k.Sender)
+                .WithMany(k => k.MessagesSent)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Message>()
+                .HasOne(k => k.Recipient)
+                .WithMany(k => k.MessagesReceived)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

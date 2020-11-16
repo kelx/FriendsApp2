@@ -36,6 +36,12 @@ namespace FriendsApp2.Api.helpers
             CreateMap<PhotoForCreationDto, Photo>();
             CreateMap<Photo, PhotoForReturnDto>(); // source, destination
             CreateMap<UserForRegisterDto, User>();
+            CreateMap<MessageForCreationDto, Message>().ReverseMap();
+            CreateMap<Message, MessageToReturnDto>()
+                .ForMember(k => k.SenderPhotoUrl, opt =>
+                            opt.MapFrom(k => k.Sender.Photos.FirstOrDefault(k => k.IsMain).Url))
+                .ForMember(k => k.RecipientPhotoUrl, opt =>
+                            opt.MapFrom(k => k.Recipient.Photos.FirstOrDefault(k => k.IsMain).Url));
 
         }
 

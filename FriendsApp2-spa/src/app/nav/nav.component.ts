@@ -25,6 +25,7 @@ export class NavComponent implements OnInit {
       next => {
         // console.log('Logged in successfully')
         this.alertifyService.success('Logged In successfully.')
+        this.model = {};
       }, error => {
         this.alertifyService.error(error);
       }, () => {
