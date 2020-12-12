@@ -14,7 +14,6 @@ using Microsoft.Extensions.Options;
 
 namespace FriendsApp2.Api.Controllers
 {
-    [Authorize]
     [Route("api/users/{userId}/photos")]
     [ApiController]
     public class PhotosController : ControllerBase
@@ -62,7 +61,7 @@ namespace FriendsApp2.Api.Controllers
         {
             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
-            var userFromRepo = await _friendsRepo.GetUser(userId);
+            var userFromRepo = await _friendsRepo.GetUser(userId, true);
 
             var file = photoForCreationDto.File;
             var uploadResult = new ImageUploadResult();
@@ -108,7 +107,7 @@ namespace FriendsApp2.Api.Controllers
         {
             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
-            var userFromRepo = await _friendsRepo.GetUser(userId);
+            var userFromRepo = await _friendsRepo.GetUser(userId, true);
 
             if (!userFromRepo.Photos.Any(p => p.Id == id))
                 return Unauthorized();
@@ -136,7 +135,7 @@ namespace FriendsApp2.Api.Controllers
 
             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
-            var userFromRepo = await _friendsRepo.GetUser(userId);
+            var userFromRepo = await _friendsRepo.GetUser(userId, true);
 
             if (!userFromRepo.Photos.Any(p => p.Id == id))
                 return Unauthorized();

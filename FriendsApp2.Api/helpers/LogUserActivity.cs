@@ -13,7 +13,7 @@ namespace FriendsApp2.Api.helpers
             var resultContext = await next();
             var userId = int.Parse(resultContext.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var repo = resultContext.HttpContext.RequestServices.GetService<IFriendsRepository>();
-            var user = await repo.GetUser(userId);
+            var user = await repo.GetUser(userId, true);
             user.LastActive = DateTime.Now;
             repo.Update(user);
             await repo.SaveAll();

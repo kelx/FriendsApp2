@@ -8,7 +8,7 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./Weather.component.css']
 })
 export class WeatherComponent implements OnInit {
-weather: any;
+  weather: any;
 
   constructor(private http: HttpClient) { }
 
@@ -19,7 +19,7 @@ weather: any;
   getWeather() {
     this.http.get('http://localhost:5000/weatherforecast').subscribe(res => {
       this.weather = JSON.stringify(res);
-      //console.log(res);
+      // console.log(res);
     }, error => {
       console.log(error);
     }

@@ -31,9 +31,14 @@ namespace FriendsApp2.Api.Data
         }
 
 
-        public async Task<User> GetUser(int id)
+        public async Task<User> GetUser(int id, bool isCurrentUser)
         {
-            var user = await _context.Users.Include(k => k.Photos).FirstOrDefaultAsync(k => k.Id == id);
+            var query = _context.Users.Include(p => p.Photos).AsQueryable();
+
+            if (isCurrentUser)
+                query = query.IgnoreQueryFilters();
+
+            var user = await query.FirstOrDefaultAsync(k => k.Id == id);
             return user;
         }
 
@@ -110,7 +115,8 @@ namespace FriendsApp2.Api.Data
 
         public async Task<Photo> GetPhoto(int id)
         {
-            return await _context.Photos.FirstOrDefaultAsync(k => k.Id == id);
+            return await _context.Photos.IgnoreQueryFilters()
+                    .FirstOrDefaultAsync(k => k.Id == id);
         }
 
         public async Task<Photo> GetMainPhotoForUser(int userId)

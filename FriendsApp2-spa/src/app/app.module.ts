@@ -12,7 +12,8 @@ import { JwtModule } from '@auth0/angular-jwt';
 import { NgxGalleryModule } from '@kolkov/ngx-gallery';
 import { FileUploadModule } from 'ng2-file-upload';
 import { MomentModule } from 'ngx-moment';
-import { PaginationModule } from 'ngx-bootstrap/pagination'
+import { PaginationModule } from 'ngx-bootstrap/pagination';
+import { ModalModule } from 'ngx-bootstrap/modal';
 
 import { AppComponent } from './app.component';
 import { WeatherComponent } from './Weather/Weather.component';
@@ -40,6 +41,13 @@ import { from } from 'rxjs';
 import { ListResolver } from 'src/_resolvers/list-resolver';
 import { MessagesResolver } from 'src/_resolvers/messages.resolver';
 import { MemberMessagesComponent } from './members/member-messages/member-messages.component';
+import { AdminPanelComponent } from 'src/Admin/admin-panel/admin-panel.component';
+import { HasRoleDirective } from 'src/_directives/hasRole.directive';
+import { UserManagementComponent } from 'src/Admin/user-management/user-management.component';
+import { PhotoManagementComponent } from 'src/Admin/photo-management/photo-management.component';
+import { AdminService } from 'src/_services/admin.service';
+import { RolesModalComponent } from 'src/Admin/roles-modal/roles-modal.component';
+
 
 
 
@@ -63,7 +71,12 @@ export function tokenGetter() {
     MemberDetailComponent,
     MemberEditComponent,
     PhotoEditorComponent,
-    MemberMessagesComponent
+    MemberMessagesComponent,
+    AdminPanelComponent,
+    HasRoleDirective,
+    UserManagementComponent,
+    PhotoManagementComponent,
+    RolesModalComponent
   ],
   imports: [
     BrowserModule,
@@ -90,7 +103,8 @@ export function tokenGetter() {
         whitelistedDomains: ['localhost:5000'],
         blacklistedRoutes: ['localhost:5000/api/auth']
       }
-    })
+    }),
+    ModalModule.forRoot()
   ],
   providers: [
     AuthService,
@@ -104,6 +118,7 @@ export function tokenGetter() {
     PrevetUnSavedChanges,
     ListResolver,
     MessagesResolver,
+    AdminService
   ],
   bootstrap: [
     AppComponent

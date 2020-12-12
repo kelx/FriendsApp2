@@ -16,12 +16,12 @@ namespace FriendsApp2.Api.Data
         public async Task<User> Login(string username, string password)
         {
             var user = await _context.Users.Include(p => p.Photos)
-                            .FirstOrDefaultAsync(k => k.Username == username);
+                            .FirstOrDefaultAsync(k => k.UserName == username);
             if (user == null)
                 return null;
 
-            if (!VerfiyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
-                return null;
+            // if (!VerfiyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+            //     return null;
 
             return user;
         }
@@ -45,8 +45,8 @@ namespace FriendsApp2.Api.Data
 
             CreatePasswordHash(password, out passwordHash, out passwordSalt);
 
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
+            // user.PasswordHash = passwordHash;
+            // user.PasswordSalt = passwordSalt;
 
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
@@ -67,7 +67,7 @@ namespace FriendsApp2.Api.Data
 
         public async Task<bool> UserExists(string username)
         {
-            if (await _context.Users.AnyAsync(k => k.Username == username))
+            if (await _context.Users.AnyAsync(k => k.UserName == username))
                 return true;
 
             return false;

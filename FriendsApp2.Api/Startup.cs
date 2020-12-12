@@ -4,13 +4,17 @@ using System.Threading.Tasks;
 using AutoMapper;
 using FriendsApp2.Api.Data;
 using FriendsApp2.Api.helpers;
+using FriendsApp2.Api.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,17 +38,21 @@ namespace FriendsApp2.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DataContext>(x => x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
-            //         services.AddControllers();
-            services.AddControllers().AddNewtonsoftJson(options =>
+
+            IdentityBuilder builder = services.AddIdentityCore<User>(opt =>
             {
-                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                opt.Password.RequireDigit = false;
+                opt.Password.RequiredLength = 4;
+                opt.Password.RequireNonAlphanumeric = false;
+                opt.Password.RequireUppercase = false;
             });
-            services.AddCors();
-            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
-            services.AddAutoMapper(typeof(Startup));
-            services.AddTransient<Seed>();
-            services.AddScoped<IAuthRepository, AuthRepository>();
-            services.AddScoped<IFriendsRepository, FriendsRepository>();
+
+            builder = new IdentityBuilder(builder.UserType, typeof(Role), builder.Services);
+            builder.AddEntityFrameworkStores<DataContext>();
+            builder.AddRoleValidator<RoleValidator<Role>>();
+            builder.AddRoleManager<RoleManager<Role>>();
+            builder.AddSignInManager<SignInManager<User>>();
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -57,6 +65,33 @@ namespace FriendsApp2.Api
                         ValidateAudience = false // change it in production mode
                     };
                 });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("ModeratePhotoRole", policy => policy.RequireRole("Admin", "Moderator"));
+                options.AddPolicy("RequireSuperAdminRole", policy => policy.RequireRole("SuperAdmin"));
+            });
+
+            //         services.AddControllers();
+            services.AddControllers(opt =>
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                        .RequireAuthenticatedUser()
+                        .Build();
+                opt.Filters.Add(new AuthorizeFilter(policy));
+            }).AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            });
+
+            services.AddCors();
+            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
+            services.AddAutoMapper(typeof(Startup));
+            services.AddTransient<Seed>();
+            //services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IFriendsRepository, FriendsRepository>();
+
             services.AddScoped<LogUserActivity>();
 
             //         services.AddHttpsRedirection(options =>
@@ -97,7 +132,7 @@ namespace FriendsApp2.Api
 
             app.UseAuthorization();
             app.UseAuthentication();
-            //seeder.SeedUsers();   //to be commented after first use
+            // seeder.SeedUsers();   //to be commented after first use
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             app.UseEndpoints(endpoints =>

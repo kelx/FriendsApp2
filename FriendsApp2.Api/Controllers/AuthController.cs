@@ -10,44 +10,51 @@ using Microsoft.Extensions.Configuration;
 using System.Text;
 using System;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace FriendsApp2.Api.Controllers
 {
 
-
+    [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthRepository _repo;
         private readonly IConfiguration _config;
         private readonly IMapper _mapper;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
 
-        public AuthController(IAuthRepository repo, IConfiguration config, IMapper mapper)
+        public AuthController(IConfiguration config, IMapper mapper,
+                    UserManager<User> userManager,
+                    SignInManager<User> signInManager)
         {
+            _signInManager = signInManager;
+            _userManager = userManager;
             _config = config;
             _mapper = mapper;
-            _repo = repo;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
         {
-            //validate request
-
-            userForRegisterDto.UserName = userForRegisterDto.UserName.ToLower();
-
-            if (await _repo.UserExists(userForRegisterDto.UserName))
-                return BadRequest("User already exists.");
 
             var userToCreate = _mapper.Map<User>(userForRegisterDto);
 
-            var createdUser = await _repo.Register(userToCreate, userForRegisterDto.Password);
+            var result = await _userManager.CreateAsync(userToCreate, userForRegisterDto.Password);
 
-            var userToReturn = _mapper.Map<UserForDetailedDto>(createdUser);
-            //return createdAtRoute
-            return CreatedAtRoute("GetUser", new { Controller = "Users", id = createdUser.Id }, userToReturn);
+            var userToReturn = _mapper.Map<UserForDetailedDto>(userToCreate);
 
+            if (result.Succeeded)
+            {
+                return CreatedAtRoute("GetUser", new { Controller = "Users", id = userToCreate.Id }, userToReturn);
+
+            }
+
+            return BadRequest(result.Errors);
 
         }
 
@@ -55,28 +62,41 @@ namespace FriendsApp2.Api.Controllers
         public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
         {
 
-            var userFromRepo = await _repo.Login(userForLoginDto.Username.ToLower(), userForLoginDto.Password);
+            var user = await _userManager.FindByNameAsync(userForLoginDto.Username);
 
-            if (userFromRepo == null)
-                return Unauthorized();
+            var result = await _signInManager.CheckPasswordSignInAsync(user, userForLoginDto.Password, false);
 
-            //code section for token
-
-            // var tokenDescriptor = new SecurityTokenDescriptor
-            // {
-            //     Subject = new ClaimsIdentity(new Claim[] 
-            //     {
-            //         new Claim(ClaimTypes.Name, user.Id.ToString())
-            //     }),
-            //     Expires = DateTime.UtcNow.AddDays(7),
-            //     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            // };
-
-            var claims = new[]
+            if (result.Succeeded)
             {
-                new Claim(ClaimTypes.NameIdentifier, userFromRepo.Id.ToString()),
-                new Claim(ClaimTypes.Name, userFromRepo.Username)
+                var appUser = await _userManager.Users.Include(k => k.Photos)
+                                    .FirstOrDefaultAsync(k => k.NormalizedUserName == userForLoginDto.Username.ToUpper());
+                var userToReturn = _mapper.Map<UserForListsDto>(appUser);
+
+                return Ok(new
+                {
+                    token = GenerateJwtToken(appUser).Result,
+                    user = userToReturn
+                });
+            }
+
+            return Unauthorized();
+
+        }
+        private async Task<string> GenerateJwtToken(User user)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.UserName)
             };
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
             var keyToken = Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:token").Value);
 
             //var key = new  SymmetricSecurityKey
@@ -91,15 +111,7 @@ namespace FriendsApp2.Api.Controllers
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
-
-            var user = _mapper.Map<UserForListsDto>(userFromRepo);
-
-            return Ok(new
-            {
-                token = tokenHandler.WriteToken(token),
-                user
-            });
-
+            return tokenHandler.WriteToken(token);
         }
 
     }

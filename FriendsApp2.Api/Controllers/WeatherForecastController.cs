@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace FriendsApp2.Api.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class WeatherForecastController : ControllerBase
@@ -29,7 +28,7 @@ namespace FriendsApp2.Api.Controllers
             _logger = logger;
         }
         // [AllowAnonymous]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
@@ -43,7 +42,7 @@ namespace FriendsApp2.Api.Controllers
             .ToArray();
         }
 
-        [AllowAnonymous]
+        [Authorize(Roles = "Member", AuthenticationSchemes = "Bearer")]
         [HttpGet("{id}")]
         public IActionResult WeatherForecast(int id)
         {
