@@ -11,6 +11,7 @@ export interface User {
   photoUrl: string;
   city: string;
   country: string;
+  blockedUser: boolean;
   interests?: string;
   introduction?: string;
   lookingFor?: string;

@@ -27,5 +27,11 @@ export class AdminService {
   rejectPhoto(photoId) {
     return this.http.post(this.baseUrl + 'admin/rejectPhoto/' + photoId, {});
   }
+  blockUser(userId) {
+    return this.http.post(this.baseUrl + 'admin/blockUser/' + userId, {});
+  }
+  unBlockUser(userId) {
+    return this.http.post(this.baseUrl + 'admin/unBlockUser/' + userId, {});
+  }
 
 }

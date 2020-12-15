@@ -132,7 +132,7 @@ namespace FriendsApp2.Api
 
             app.UseAuthorization();
             app.UseAuthentication();
-            // seeder.SeedUsers();   //to be commented after first use
+            seeder.SeedUsers();   //to be commented after first use
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             app.UseEndpoints(endpoints =>

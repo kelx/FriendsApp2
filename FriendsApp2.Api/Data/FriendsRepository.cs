@@ -47,7 +47,7 @@ namespace FriendsApp2.Api.Data
             var users = _context.Users.Include(k => k.Photos)
                         .OrderByDescending(k => k.LastActive).AsQueryable(); ;
 
-            users = users.Where(k => k.Id != userParams.UserId);
+            users = users.Where(k => k.Id != userParams.UserId || !k.BlockedUser);
             if (!string.IsNullOrEmpty(userParams.Gender))
             {
                 users = users.Where(k => k.Gender == userParams.Gender);

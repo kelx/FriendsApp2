@@ -48,6 +48,7 @@ namespace FriendsApp2.Api.Controllers
                                   {
                                       Id = user.Id,
                                       UserName = user.UserName,
+                                      BlockedUser = user.BlockedUser,
                                       Roles = (from userRole in user.UserRoles
                                                join role in _context.Roles
                                                on userRole.RoleId equals role.Id
@@ -139,5 +140,34 @@ namespace FriendsApp2.Api.Controllers
             return Ok(await _userManager.GetRolesAsync(user));
 
         }
+        [Authorize(Policy = "RequireAdminRole", AuthenticationSchemes = "Bearer")]
+        [HttpPost("blockUser/{userId}")]
+        public async Task<IActionResult> BlockUser(int userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            user.BlockedUser = true;
+            _context.Update(user);
+
+            if (await _context.SaveChangesAsync() > 0)
+                return NoContent();
+
+            return BadRequest("Could not block user.");
+
+        }
+        [Authorize(Policy = "RequireAdminRole", AuthenticationSchemes = "Bearer")]
+        [HttpPost("unBlockUser/{userId}")]
+        public async Task<IActionResult> UnBlockUser(int userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            user.BlockedUser = false;
+            _context.Update(user);
+
+            if (await _context.SaveChangesAsync() > 0)
+                return NoContent();
+
+            return BadRequest("Could not Unblock user.");
+
+        }
+
     }
 }

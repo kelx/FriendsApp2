@@ -3,6 +3,7 @@ import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { User } from 'src/app/_models/user';
 import { AdminService } from 'src/_services/admin.service';
 import { AlertifyService } from 'src/_services/alertify.service';
+import { AuthService } from 'src/_services/auth.service';
 import { RolesModalComponent } from '../roles-modal/roles-modal.component';
 
 @Component({
@@ -13,16 +14,38 @@ import { RolesModalComponent } from '../roles-modal/roles-modal.component';
 export class UserManagementComponent implements OnInit {
   bsModalRef: BsModalRef;
   users: User[];
+  currentUserId: number;
 
-  constructor(private adminService: AdminService,
+  constructor(private adminService: AdminService, private authService: AuthService,
     private modalService: BsModalService, private alertify: AlertifyService) { }
 
   ngOnInit() {
     this.getUsersWithRoles();
+    this.currentUserId = +this.authService.decodedToken.nameid;
+    console.log(this.authService.decodedToken);
   }
   getUsersWithRoles() {
     this.adminService.getUsersWithRoles().subscribe((users: User[]) => {
+      users.forEach((el, i) => {
+        if (el.userName === 'Kelmen' && el.userName !== this.authService.decodedToken.unique_name) {
+          el.roles.forEach((kl, j) => {
+            if (kl === 'SuperAdmin') {
+              users[i].roles[j] = '*';
+            }
+          });
+        }
+      });
+      // for (let i = 0; i < users.length; i++) {
+      //   if (users[i].userName === 'Kelmen') {
+      //     for (let j = 0; j < users[i].roles.length; j++) {
+      //       if (users[i].roles[j] === 'SuperAdmin') {
+      //         users[i].roles[j] = '*';
+      //       }
+      //     }
+      //   }
+      // }
       this.users = users;
+
     }, error => {
       this.alertify.error(error);
     });
@@ -46,6 +69,28 @@ export class UserManagementComponent implements OnInit {
         });
       }
     });
+  }
+
+  blockUnBlockUser(user) {
+    if (!user.blockedUser) {
+      if (user.id === this.currentUserId) {
+        this.alertify.error('You cannot block yourself!.');
+      } else {
+        this.adminService.blockUser(user.id).subscribe(next => {
+          this.users.find(k => k.id === user.id).blockedUser = true;
+          this.alertify.message('Successfully blocked.');
+        }, error => {
+          this.alertify.error(error);
+        });
+      }
+    } else {
+      this.adminService.unBlockUser(user.id).subscribe(next => {
+        this.users.find(k => k.id === user.id).blockedUser = false;
+        this.alertify.message('Successfully Unblocked.');
+      }, error => {
+        this.alertify.error(error);
+      });
+    }
   }
 
   private getRolesArray(user) {
